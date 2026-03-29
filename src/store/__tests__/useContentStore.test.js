@@ -12,17 +12,17 @@ beforeEach(() => {
 
 describe('getCachedContent', () => {
   it('returns undefined for cache miss', () => {
-    const result = useContentStore.getState().getCachedContent('some/path');
+    const result = useContentStore.getState().getCachedContent('en/intro');
     expect(result).toBeUndefined();
   });
 
   it('returns cached entry for cache hit', () => {
     const entry = { content: '# Hello', timestamp: Date.now() };
     useContentStore.setState({
-      contentCache: { 'some/path': entry },
+      contentCache: { 'en/intro': entry },
     });
 
-    const result = useContentStore.getState().getCachedContent('some/path');
+    const result = useContentStore.getState().getCachedContent('en/intro');
     expect(result).toEqual(entry);
     expect(result.content).toBe('# Hello');
   });
@@ -36,24 +36,24 @@ describe('cleanOldCache', () => {
 
     useContentStore.setState({
       contentCache: {
-        'old/path': { content: 'old', timestamp: eightDaysAgo },
-        'new/path': { content: 'new', timestamp: oneDayAgo },
+        'en/old/path': { content: 'old', timestamp: eightDaysAgo },
+        'zh/new/path': { content: 'new', timestamp: oneDayAgo },
       },
     });
 
     useContentStore.getState().cleanOldCache();
 
     const cache = useContentStore.getState().contentCache;
-    expect(cache['old/path']).toBeUndefined();
-    expect(cache['new/path']).toBeDefined();
+    expect(cache['en/old/path']).toBeUndefined();
+    expect(cache['zh/new/path']).toBeDefined();
   });
 
   it('keeps entries within 7 days', () => {
     const now = Date.now();
     useContentStore.setState({
       contentCache: {
-        a: { content: 'a', timestamp: now },
-        b: { content: 'b', timestamp: now - 6 * 24 * 60 * 60 * 1000 },
+        'en/a': { content: 'a', timestamp: now },
+        'zh/b': { content: 'b', timestamp: now - 6 * 24 * 60 * 60 * 1000 },
       },
     });
 
@@ -72,9 +72,9 @@ describe('getCacheSize', () => {
     const now = Date.now();
     useContentStore.setState({
       contentCache: {
-        a: { content: 'a', timestamp: now },
-        b: { content: 'b', timestamp: now },
-        c: { content: 'c', timestamp: now },
+        'en/a': { content: 'a', timestamp: now },
+        'zh/b': { content: 'b', timestamp: now },
+        'en/c': { content: 'c', timestamp: now },
       },
     });
 
@@ -87,15 +87,15 @@ describe('removeCachedContent', () => {
     const now = Date.now();
     useContentStore.setState({
       contentCache: {
-        a: { content: 'a', timestamp: now },
-        b: { content: 'b', timestamp: now },
+        'en/a': { content: 'a', timestamp: now },
+        'zh/b': { content: 'b', timestamp: now },
       },
     });
 
-    useContentStore.getState().removeCachedContent('a');
+    useContentStore.getState().removeCachedContent('en/a');
 
-    expect(useContentStore.getState().getCachedContent('a')).toBeUndefined();
-    expect(useContentStore.getState().getCachedContent('b')).toBeDefined();
+    expect(useContentStore.getState().getCachedContent('en/a')).toBeUndefined();
+    expect(useContentStore.getState().getCachedContent('zh/b')).toBeDefined();
   });
 });
 
